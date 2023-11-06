@@ -1,5 +1,7 @@
 use crate::{client::TimeTrackerClient, commands::*};
 use clap::{Parser, Subcommand};
+use std::io::Write;
+use termcolor::{Color, StandardStream, ColorSpec, ColorChoice, WriteColor};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -36,10 +38,17 @@ enum TimeCommand {
     Add(AddTimeCommand),
 }
 
+fn print_error(error: String) {
+    let mut stdout = StandardStream::stdout(ColorChoice::Always);
+    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red))).unwrap();
+    writeln!(stdout, "{}", error).unwrap();
+
+}
+
 fn handle_result(result: Result<String, String>) {
     match result {
         Ok(message) => println!("{}", message),
-        Err(error) => println!("{}", error),
+        Err(error) => print_error(error),
     }
 }
 
